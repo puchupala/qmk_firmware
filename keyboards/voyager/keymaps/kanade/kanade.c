@@ -1,12 +1,6 @@
 bool achordion_chord(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
                      uint16_t other_keycode, keyrecord_t* other_record) {
-  // Allow same-hand holds when the other key is in the rows below the
-  // alphas. I need the `% (MATRIX_ROWS / 2)` because my keyboard is split.
-  if (other_record->event.key.row % (MATRIX_ROWS / 2) >= 4) {
-    return true;
-  }
-
-  // Otherwise, follow the opposite hands rule.
+  // Follow the opposite hands rule.
   return achordion_opposite_hands(tap_hold_record, other_record);
 }
 
@@ -24,7 +18,7 @@ bool achordion_eager_mod(uint8_t mod) {
 
 uint16_t achordion_streak_timeout(uint16_t tap_hold_keycode) {
   if (IS_QK_LAYER_TAP(tap_hold_keycode)) {
-    return 0;  // Disable streak detection on layer-tap keys.
+    return 20;  // A shorter streak timeout for layer-tap keys.
   }
 
   // Otherwise, tap_hold_keycode is a mod-tap key.
@@ -37,3 +31,13 @@ uint16_t achordion_streak_timeout(uint16_t tap_hold_keycode) {
     return 120;  // A longer timeout otherwise.
   }
 }
+
+// Send `delete` when `shift` + `backspace` are pressed.
+// Note that `backspace` is a layer1 layer-tap key.
+const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, LT(1,KC_BSPC), KC_DEL);
+
+// This globally defines all key overrides to be used.
+const key_override_t **key_overrides = (const key_override_t *[]){
+    &delete_key_override,
+    NULL // Null terminate the array of overrides!
+};
