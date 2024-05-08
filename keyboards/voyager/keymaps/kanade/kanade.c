@@ -32,9 +32,10 @@ uint16_t achordion_streak_timeout(uint16_t tap_hold_keycode) {
   }
 }
 
-// Send `delete` when `shift` + `backspace` are pressed.
-// Note that `backspace` is a layer1 layer-tap key.
-const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, LT(2,KC_BSPC), KC_DEL);
+// Send `delete` when `left shift` + `backspace` are pressed.
+// Note that `backspace` is a layer2 layer-tap key.
+// Only apply to left shift to prevent accidental trigger when holding layer-tap key.
+const key_override_t delete_key_override = ko_make_basic(MOD_BIT(KC_LSFT), LT(2,KC_BSPC), KC_DEL);
 
 // This globally defines all key overrides to be used.
 const key_override_t **key_overrides = (const key_override_t *[]){
