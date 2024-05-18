@@ -42,3 +42,17 @@ const key_override_t **key_overrides = (const key_override_t *[]){
     &delete_key_override,
     NULL // Null terminate the array of overrides!
 };
+
+void caps_word_set_user(bool active) {
+    if (active) {
+      STATUS_LED_1(true);
+      STATUS_LED_2(true);
+      STATUS_LED_3(true);
+      STATUS_LED_4(true);
+    } else {
+      STATUS_LED_1(false);
+      STATUS_LED_2(false);
+      STATUS_LED_3(false);
+      STATUS_LED_4(false);
+    }
+}
