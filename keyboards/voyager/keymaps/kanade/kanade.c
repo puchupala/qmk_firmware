@@ -16,7 +16,8 @@ bool achordion_eager_mod(uint8_t mod) {
   return true;  // Eagerly apply all mods.
 }
 
-uint16_t achordion_streak_timeout(uint16_t tap_hold_keycode) {
+uint16_t achordion_streak_chord_timeout(
+    uint16_t tap_hold_keycode, uint16_t next_keycode) {
   if (IS_QK_LAYER_TAP(tap_hold_keycode)) {
     return 20;  // A shorter streak timeout for layer-tap keys.
   }
@@ -24,11 +25,11 @@ uint16_t achordion_streak_timeout(uint16_t tap_hold_keycode) {
   // Otherwise, tap_hold_keycode is a mod-tap key.
   uint8_t mod = mod_config(QK_MOD_TAP_GET_MODS(tap_hold_keycode));
   if ((mod & MOD_LSFT) != 0) {
-    return 20;  // A shorter streak timeout for Shift mod-tap keys.
+    return 100;  // A shorter streak timeout for Shift mod-tap keys.
   } else if ((mod & MOD_RSFT) != 0) {
-    return 20;  // A shorter streak timeout for Shift mod-tap keys.
+    return 100;  // A shorter streak timeout for Shift mod-tap keys.
   } else {
-    return 120;  // A longer timeout otherwise.
+    return 220;  // A longer timeout otherwise.
   }
 }
 
