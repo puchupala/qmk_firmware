@@ -79,15 +79,15 @@ uint16_t achordion_streak_chord_timeout(
 
   // A shorter streak timeout for GUI + Shift rolling on the same hand.
   if ((tap_hold_mod == MOD_LGUI) && (next_mod == MOD_LSFT)) {
-    return 100;
+    return TAPPING_TERM - 80;
   } else if ((tap_hold_mod == MOD_RGUI) && (next_mod == MOD_RSFT)) {
-    return 100;
+    return TAPPING_TERM - 80;
   }
 
   if ((tap_hold_mod & MOD_LSFT) != 0) {
-    return 100;  // A shorter streak timeout for (both) Shift mod-tap keys.
+    return TAPPING_TERM - 80;  // A shorter streak timeout for (both) Shift mod-tap keys.
   } else {
-    return 220;  // A longer timeout otherwise.
+    return TAPPING_TERM + 60;  // A longer timeout otherwise.
   }
 }
 
