@@ -72,10 +72,19 @@ uint16_t achordion_streak_chord_timeout(
   if (IS_QK_LAYER_TAP(tap_hold_keycode)) {
     return 0;
   }
-
+  
   // Otherwise, tap_hold_keycode is a mod-tap key.
-  uint8_t mod = mod_config(QK_MOD_TAP_GET_MODS(tap_hold_keycode));
-  if ((mod & MOD_LSFT) != 0) {
+  uint8_t tap_hold_mod = mod_config(QK_MOD_TAP_GET_MODS(tap_hold_keycode));
+  uint8_t next_mod = mod_config(QK_MOD_TAP_GET_MODS(next_keycode));
+
+  // A shorter streak timeout for GUI + Shift rolling on the same hand.
+  if ((tap_hold_mod == MOD_LGUI) && (next_mod == MOD_LSFT)) {
+    return 100;
+  } else if ((tap_hold_mod == MOD_RGUI) && (next_mod == MOD_RSFT)) {
+    return 100;
+  }
+
+  if ((tap_hold_mod & MOD_LSFT) != 0) {
     return 100;  // A shorter streak timeout for (both) Shift mod-tap keys.
   } else {
     return 220;  // A longer timeout otherwise.
