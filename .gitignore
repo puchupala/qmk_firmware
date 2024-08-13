@@ -113,6 +113,7 @@ user_song_list.h
 !/keyboards/ergodox_ez
 !/keyboards/voyager
 /keyboards/**/keymaps/*
+!/keyboards/voyager/keymaps/kanade
 # clangd
 compile_commands.json
 .clangd/
