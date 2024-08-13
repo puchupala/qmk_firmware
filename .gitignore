@@ -130,3 +130,8 @@ via*.json
 !/keyboards/zsa/**/keymaps/default/**
 !/keyboards/zsa/**/keymaps/oryx
 !/keyboards/zsa/**/keymaps/oryx/**
+!/keyboards/zsa/voyager/keymaps/kanade
+!/keyboards/zsa/voyager/keymaps/kanade/**
+
+# Junk files (again)
+.DS_Store
