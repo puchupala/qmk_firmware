@@ -8,14 +8,12 @@
  * 2. Copy the source to `keyboards/zsa/voyager/keymaps/kanade`.
  * 3. Add the following to `rules.mk`:
  *    ```
- *    SRC += features/achordion.c
- *    PERMISSIVE_HOLD = yes
  *    KEY_OVERRIDE_ENABLE = yes
  *    CAPS_WORD_ENABLE = yes
  *    ```
  * 4. Add the following to `config.h`:
  *    ```
- *    #define ACHORDION_STREAK
+ *    #define CHORDAL_HOLD
  *    #define VOYAGER_USER_LEDS
  *    #define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
  *    ```
@@ -23,73 +21,10 @@
  *    ```
  *    #include "kanade.c"
  *    ```
- * 6. Add the following to the top of `keymap.c::process_record_user()`:
- *    ```
- *    if (!_process_record_user(keycode, record)) { return false; }
- *    ```
- * 7. Make sure that layer-tap key in `delete_key_override` match the key in
+ * 6. Make sure that layer-tap key in `delete_key_override` match the key in
  *    `keymap.c`.
  *
  */
-
-#include "features/achordion.h"
-
-///////////////////////////////////////////////////////////////////////////////
-// Achordion (https://getreuer.info/posts/keyboards/achordion)
-///////////////////////////////////////////////////////////////////////////////
-
-// This function is called when entering process_record_user() in keymap.c.
-bool _process_record_user(uint16_t keycode, keyrecord_t* record) {
-  if (!process_achordion(keycode, record)) { return false; }
-  return true;
-}
-
-void matrix_scan_user(void) {
-  achordion_task();
-}
-
-bool achordion_chord(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
-                     uint16_t other_keycode, keyrecord_t* other_record) {
-  // Follow the opposite hands rule.
-  return achordion_opposite_hands(tap_hold_record, other_record);
-}
-
-uint16_t achordion_timeout(uint16_t tap_hold_keycode) {
-  if (IS_QK_LAYER_TAP(tap_hold_keycode)) {
-    return 0;  // Bypass Achordion for thumb keys.
-  }
-
-  return 800;  // Otherwise use a timeout of 800 ms.
-}
-
-bool achordion_eager_mod(uint8_t mod) {
-  return true;  // Eagerly apply all mods.
-}
-
-uint16_t achordion_streak_chord_timeout(
-    uint16_t tap_hold_keycode, uint16_t next_keycode) {
-  // Disable streak detection on LT keys.
-  if (IS_QK_LAYER_TAP(tap_hold_keycode)) {
-    return 0;
-  }
-  
-  // Otherwise, tap_hold_keycode is a mod-tap key.
-  uint8_t tap_hold_mod = mod_config(QK_MOD_TAP_GET_MODS(tap_hold_keycode));
-  uint8_t next_mod = mod_config(QK_MOD_TAP_GET_MODS(next_keycode));
-
-  // A shorter streak timeout for GUI + Shift rolling on the same hand.
-  if ((tap_hold_mod == MOD_LGUI) && (next_mod == MOD_LSFT)) {
-    return TAPPING_TERM - 80;
-  } else if ((tap_hold_mod == MOD_RGUI) && (next_mod == MOD_RSFT)) {
-    return TAPPING_TERM - 80;
-  }
-
-  if ((tap_hold_mod & MOD_LSFT) != 0) {
-    return TAPPING_TERM - 80;  // A shorter streak timeout for (both) Shift mod-tap keys.
-  } else {
-    return TAPPING_TERM + 60;  // A longer timeout otherwise.
-  }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Others
