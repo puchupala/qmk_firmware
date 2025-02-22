@@ -72,11 +72,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 const uint16_t PROGMEM combo0[] = { KC_9, KC_0, KC_MINUS, COMBO_END};
 const uint16_t PROGMEM combo1[] = { KC_EQUAL, KC_1, COMBO_END};
+const uint16_t PROGMEM combo2[] = { KC_0, KC_MINUS, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
     COMBO(combo0, TG(1)),
     COMBO(combo1, KC_ESCAPE),
+    COMBO_ACTION(combo2),  // Toggle Caps Word
 };
+
+void process_combo_event(uint16_t combo_index, bool pressed) {
+  if ((combo_index == 2) && pressed) {
+      caps_word_toggle();
+  }
+}
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
