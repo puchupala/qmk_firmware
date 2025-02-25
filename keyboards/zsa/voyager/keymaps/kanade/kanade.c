@@ -31,7 +31,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, uint16_t other_keycode, keyrecord_t *other_record) {
-  if (IS_QK_LAYER_TAP(tap_hold_keycode)) return true;  // Behave like Hold On Other Key Press for layer-tap keys.
+  if (IS_QK_LAYER_TAP(tap_hold_keycode)) return true;  // Bypass Chordal Hold for layer-tap keys.
   return get_chordal_hold_default(tap_hold_record, other_record);
 }
 
