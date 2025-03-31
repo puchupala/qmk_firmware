@@ -35,6 +35,11 @@ bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t *tap_hold_record, u
   return get_chordal_hold_default(tap_hold_record, other_record);
 }
 
+uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
+  if (IS_QK_LAYER_TAP(keycode)) return QUICK_TAP_TERM - 100;  // Reduce quick-tap term for layer-tap keys.
+  return QUICK_TAP_TERM;
+}
+
 // Send `delete` when `left shift` + `backspace` are pressed.
 // Note that `backspace` is a layer2 layer-tap key.
 // Only apply to left shift to prevent accidental trigger when holding layer-tap key.

@@ -17,3 +17,4 @@
 
 #define CHORDAL_HOLD
 #define VOYAGER_USER_LEDS
+#define QUICK_TAP_TERM_PER_KEY
