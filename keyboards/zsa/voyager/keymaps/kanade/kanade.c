@@ -64,3 +64,30 @@ void caps_word_set_user(bool active) {
     STATUS_LED_4(false);
   }
 }
+
+bool is_flow_tap_key(uint16_t keycode) {
+  if ((get_mods() & (MOD_MASK_CG | MOD_BIT_LALT)) != 0) {
+      return false; // Disable Flow Tap on hotkeys.
+  }
+  switch (get_tap_keycode(keycode)) {
+      case KC_A ... KC_Z:
+      case KC_DOT:
+      case KC_COMM:
+      case KC_SCLN:
+      case KC_SLSH:
+          return true;
+  }
+  return false;
+}
+
+uint16_t get_flow_tap_term(uint16_t keycode, keyrecord_t* record, 
+                           uint16_t prev_keycode) {
+  uint16_t mod = QK_MOD_TAP_GET_MODS(keycode);
+  if (mod == MOD_LSFT || mod == MOD_RSFT) {
+      return 0;  // Disable Flow Tap for (current) Shift keys.
+  }
+  if (is_flow_tap_key(keycode) && is_flow_tap_key(prev_keycode)) {
+    return FLOW_TAP_TERM;
+  }
+  return 0;  // Disable Flow Tap.
+}

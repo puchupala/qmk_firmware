@@ -4,7 +4,8 @@
 */
 
 #undef TAPPING_TERM
-#define TAPPING_TERM 190
+#define TAPPING_TERM 200
+#define FLOW_TAP_TERM 150
 
 #define PERMISSIVE_HOLD
 
