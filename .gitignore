@@ -133,3 +133,7 @@ via*.json
 !/keyboards/zsa/**/keymaps/default/**
 !/keyboards/zsa/**/keymaps/oryx
 !/keyboards/zsa/**/keymaps/oryx/**
+
+# Kanede's custom keymap
+!/keyboards/zsa/**/keymaps/kanade
+!/keyboards/zsa/**/keymaps/kanade/**
