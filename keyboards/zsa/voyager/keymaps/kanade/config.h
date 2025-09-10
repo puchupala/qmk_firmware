@@ -1,7 +1,7 @@
 #define CHORDAL_HOLD
 #undef TAPPING_TERM
 #define TAPPING_TERM 220
-#define FLOW_TAP_TERM 150
+#define FLOW_TAP_TERM 0
 
 #define PERMISSIVE_HOLD
 
