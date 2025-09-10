@@ -12,9 +12,9 @@ enum custom_keycodes {
 
 
 
-#define DUAL_FUNC_0 LT(6, KC_S)
-#define DUAL_FUNC_1 LT(11, KC_C)
-#define DUAL_FUNC_2 LT(13, KC_D)
+#define DUAL_FUNC_0 LT(8, KC_F17)
+#define DUAL_FUNC_1 LT(7, KC_Z)
+#define DUAL_FUNC_2 LT(1, KC_F19)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_voyager(
@@ -76,14 +76,9 @@ const uint16_t PROGMEM combo2[] = { MT(MOD_LGUI, KC_S), MT(MOD_LSFT, KC_T), MT(M
 combo_t key_combos[COMBO_COUNT] = {
     COMBO(combo0, TG(1)),
     COMBO(combo1, KC_ESCAPE),
-    COMBO_ACTION(combo2),  // Toggle Caps Word
+    COMBO(combo2, CW_TOGG),
 };
 
-void process_combo_event(uint16_t combo_index, bool pressed) {
-  if ((combo_index == 2) && pressed) {
-      caps_word_toggle();
-  }
-}
 
 
 extern rgb_config_t rgb_matrix_config;
