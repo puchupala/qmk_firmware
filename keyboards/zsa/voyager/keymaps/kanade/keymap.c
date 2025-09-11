@@ -11,10 +11,22 @@ enum custom_keycodes {
 };
 
 
+typedef struct {
+    uint16_t tap;
+    uint16_t hold;
+    uint16_t held;
+} tap_dance_tap_hold_t;
+tap_dance_action_t *action;
 
-#define DUAL_FUNC_0 LT(8, KC_F17)
-#define DUAL_FUNC_1 LT(7, KC_Z)
-#define DUAL_FUNC_2 LT(1, KC_F19)
+enum tap_dance_codes {
+  DANCE_0,
+  DANCE_1,
+  DANCE_2,
+  DANCE_3,
+  DANCE_4,
+  DANCE_5,
+};
+
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_voyager(
@@ -48,14 +60,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [4] = LAYOUT_voyager(
     KC_ESCAPE,      KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,         
     KC_TRANSPARENT, LGUI(KC_Q),     LGUI(KC_W),     LGUI(KC_F),     KC_TRANSPARENT, LGUI(KC_B),                                     KC_MINUS,       KC_7,           KC_8,           KC_9,           KC_SLASH,       KC_LABK,        
-    KC_TRANSPARENT, DUAL_FUNC_0,    KC_LEFT_ALT,    DUAL_FUNC_1,    DUAL_FUNC_2,    KC_TRANSPARENT,                                 KC_PLUS,        KC_4,           KC_5,           KC_6,           KC_ASTR,        KC_RABK,        
+    KC_TRANSPARENT, TD(DANCE_0),    KC_LEFT_ALT,    TD(DANCE_1),    TD(DANCE_2),    KC_TRANSPARENT,                                 KC_PLUS,        KC_4,           KC_5,           KC_6,           KC_ASTR,        KC_RABK,        
     KC_SPACE,       LGUI(KC_Z),     LGUI(KC_X),     LGUI(KC_C),     LALT(LGUI(LCTL(LSFT(KC_D)))),LGUI(KC_V),                                     KC_EXLM,        KC_1,           KC_2,           KC_3,           KC_DOT,         KC_BSPC,        
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_EQUAL,       KC_0
   ),
   [5] = LAYOUT_voyager(
     KC_ESCAPE,      KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,         
     KC_TRANSPARENT, LGUI(KC_Q),     LGUI(KC_W),     LGUI(KC_F),     KC_TRANSPARENT, LGUI(KC_B),                                     LCTL(KC_LEFT),  KC_F17,         KC_F18,         LCTL(KC_RIGHT), KC_TRANSPARENT, KC_TRANSPARENT, 
-    KC_TRANSPARENT, DUAL_FUNC_0,    KC_LEFT_ALT,    DUAL_FUNC_1,    DUAL_FUNC_2,    KC_TRANSPARENT,                                 KC_LEFT,        KC_DOWN,        KC_UP,          KC_RIGHT,       KC_TRANSPARENT, KC_TRANSPARENT, 
+    KC_TRANSPARENT, TD(DANCE_3),    KC_LEFT_ALT,    TD(DANCE_4),    TD(DANCE_5),    KC_TRANSPARENT,                                 KC_LEFT,        KC_DOWN,        KC_UP,          KC_RIGHT,       KC_TRANSPARENT, KC_TRANSPARENT, 
     KC_SPACE,       LGUI(KC_Z),     LGUI(KC_X),     LGUI(KC_C),     LALT(LGUI(LCTL(LSFT(KC_D)))),LGUI(KC_V),                                     KC_HOME,        KC_PGDN,        KC_PAGE_UP,     KC_END,         KC_TRANSPARENT, KC_TRANSPARENT, 
                                                     KC_TRANSPARENT, KC_TRANSPARENT,                                 KC_TRANSPARENT, KC_TRANSPARENT
   ),
@@ -163,57 +175,61 @@ bool rgb_matrix_indicators_user(void) {
 }
 
 
+void tap_dance_tap_hold_finished(tap_dance_state_t *state, void *user_data) {
+    tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)user_data;
+
+    if (state->pressed) {
+        if (state->count == 1
+#ifndef PERMISSIVE_HOLD
+            && !state->interrupted
+#endif
+        ) {
+            register_code16(tap_hold->hold);
+            tap_hold->held = tap_hold->hold;
+        } else {
+            register_code16(tap_hold->tap);
+            tap_hold->held = tap_hold->tap;
+        }
+    }
+}
+
+void tap_dance_tap_hold_reset(tap_dance_state_t *state, void *user_data) {
+    tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)user_data;
+
+    if (tap_hold->held) {
+        unregister_code16(tap_hold->held);
+        tap_hold->held = 0;
+    }
+}
+
+#define ACTION_TAP_DANCE_TAP_HOLD(tap, hold) \
+    { .fn = {NULL, tap_dance_tap_hold_finished, tap_dance_tap_hold_reset}, .user_data = (void *)&((tap_dance_tap_hold_t){tap, hold, 0}), }
 
 
+tap_dance_action_t tap_dance_actions[] = {
+        [DANCE_0] = ACTION_TAP_DANCE_TAP_HOLD(LGUI(KC_A), KC_LEFT_CTRL),
+        [DANCE_1] = ACTION_TAP_DANCE_TAP_HOLD(LGUI(KC_S), KC_LEFT_GUI),
+        [DANCE_2] = ACTION_TAP_DANCE_TAP_HOLD(LGUI(KC_T), KC_LEFT_SHIFT),
+        [DANCE_3] = ACTION_TAP_DANCE_TAP_HOLD(LGUI(KC_A), KC_LEFT_CTRL),
+        [DANCE_4] = ACTION_TAP_DANCE_TAP_HOLD(LGUI(KC_S), KC_LEFT_GUI),
+        [DANCE_5] = ACTION_TAP_DANCE_TAP_HOLD(LGUI(KC_T), KC_LEFT_SHIFT),
+};
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
 
-    case DUAL_FUNC_0:
-      if (record->tap.count > 0) {
-        if (record->event.pressed) {
-          register_code16(LGUI(KC_A));
-        } else {
-          unregister_code16(LGUI(KC_A));
+    case TD(DANCE_0):
+    case TD(DANCE_1):
+    case TD(DANCE_2):
+    case TD(DANCE_3):
+    case TD(DANCE_4):
+    case TD(DANCE_5):
+        action = &tap_dance_actions[TD_INDEX(keycode)];
+        if (!record->event.pressed && action->state.count && !action->state.finished) {
+            tap_dance_tap_hold_t *tap_hold = (tap_dance_tap_hold_t *)action->user_data;
+            tap_code16(tap_hold->tap);
         }
-      } else {
-        if (record->event.pressed) {
-          register_code16(KC_LEFT_CTRL);
-        } else {
-          unregister_code16(KC_LEFT_CTRL);
-        }  
-      }  
-      return false;
-    case DUAL_FUNC_1:
-      if (record->tap.count > 0) {
-        if (record->event.pressed) {
-          register_code16(LGUI(KC_S));
-        } else {
-          unregister_code16(LGUI(KC_S));
-        }
-      } else {
-        if (record->event.pressed) {
-          register_code16(KC_LEFT_GUI);
-        } else {
-          unregister_code16(KC_LEFT_GUI);
-        }  
-      }  
-      return false;
-    case DUAL_FUNC_2:
-      if (record->tap.count > 0) {
-        if (record->event.pressed) {
-          register_code16(LGUI(KC_T));
-        } else {
-          unregister_code16(LGUI(KC_T));
-        }
-      } else {
-        if (record->event.pressed) {
-          register_code16(KC_LEFT_SHIFT);
-        } else {
-          unregister_code16(KC_LEFT_SHIFT);
-        }  
-      }  
-      return false;
+        break;
     case RGB_SLD:
       if (record->event.pressed) {
         rgblight_mode(1);
