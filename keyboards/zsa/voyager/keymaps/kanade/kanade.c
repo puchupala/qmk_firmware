@@ -44,9 +44,15 @@ uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
 // Only apply to left shift to prevent accidental trigger when holding layer-tap key.
 const key_override_t delete_key_override = ko_make_basic(MOD_BIT(KC_LSFT), LT(2, KC_BSPC), KC_DEL);
 
+// Send `underscore` when `right shift` + `space` are pressed.
+// Note that `space` is a layer4 layer-tap key.
+const key_override_t underscore_key_override = ko_make_basic(MOD_BIT(KC_RSFT), LT(4, KC_SPACE), KC_UNDS);
+
+
 // This globally defines all key overrides to be used.
 const key_override_t *key_overrides[] = {
-	&delete_key_override
+	&delete_key_override,
+	&underscore_key_override
 };
 
 void caps_word_set_user(bool active) {
